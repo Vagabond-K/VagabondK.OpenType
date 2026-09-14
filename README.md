@@ -1,4 +1,4 @@
-# VagabondK.OpenType
+# VagabondK.OpenType [![NuGet](https://img.shields.io/nuget/v/VagabondK.OpenType.svg)](https://www.nuget.org/packages/VagabondK.OpenType/) [![NuGet Downloads](https://img.shields.io/nuget/dt/VagabondK.OpenType.svg)](https://www.nuget.org/packages/VagabondK.OpenType/) [![License](https://img.shields.io/badge/license-LGPL--2.1-blue.svg)](https://licenses.nuget.org/LGPL-2.1-only)
 
 .NET 기반의 **OpenType 폰트 파일 생성 라이브러리**입니다. 사용자가 선과 곡선으로 글리프 윤곽을 직접 구성하면, TTF와 OTF 폰트 파일을 생성합니다.
 
