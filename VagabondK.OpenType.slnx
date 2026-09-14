@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="SevenSegmentSample/SevenSegmentSample.csproj" />
+  <Project Path="SimpleFontSample/SimpleFontSample.csproj" Id="31668efa-e8f2-489c-8412-0c3e955236df" />
+  <Project Path="VagabondK.OpenType/VagabondK.OpenType.csproj" />
+</Solution>

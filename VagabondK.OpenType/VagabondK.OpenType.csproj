@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Company>Vagabond K</Company>
+    <Authors>Vagabond K</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIcon>nugetIcon.png</PackageIcon>
+    <PackageLicenseExpression>LGPL-2.1-only</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/Vagabond-K/VagabondK.OpenType</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Description>사용자가 직접 선과 곡선으로 문자를 그려서 TTF와 OTF 폰트 파일을 생성하는 기능을 제공하는 라이브러리입니다.</Description>
+    <Version>1.0.0</Version>
+    <PackageProjectUrl>https://github.com/Vagabond-K/VagabondK.OpenType</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\nugetIcon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+</Project>
