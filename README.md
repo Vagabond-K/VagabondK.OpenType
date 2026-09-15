@@ -2,6 +2,10 @@
 
 .NET 기반의 **OpenType 폰트 파일 생성 라이브러리**입니다. 사용자가 선과 곡선으로 글리프 윤곽을 직접 구성하면, TTF와 OTF 폰트 파일을 생성합니다.
 
+- [Documentation](https://vagabond-k.github.io/docs/api/VagabondK.OpenType.html)
+
+[!["Buy me a soju"](https://vagabond-k.github.io/Images/buymeasoju131x36.png)](https://www.buymeacoffee.com/VagabondK)  
+
 ## 프로젝트 목적
 
 이 프로젝트는 **[VagabondK.Indicators](https://github.com/Vagabond-K/VagabondK.Indicators)** 프로젝트의 **디지털 문자를 폰트로 생성**하기 위해 개발되었습니다.
