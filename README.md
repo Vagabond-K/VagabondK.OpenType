@@ -12,7 +12,11 @@
 
 `VagabondK.Indicators`는 데이터를 화면에 표시하기 위한 .NET 기반 인디케이터 라이브러리입니다. 현재 **Digital Indicator**만 제공하며(차트/Analog Indicator 기능은 아직 구현되지 않았습니다), Digital Indicator는 수치/문자열 데이터를 디지털 문자로 표시합니다. 
 
-본 프로젝트(VagabondK.OpenType)는 그 디지털 문자의 윤곽을 실제 OpenType 폰트 파일(OTF/TTF)로 변환해, 폰트 시스템에 설치하거나 임베디드 환경에서 텍스트 렌더링으로 재사용할 수 있게 합니다.
+본 프로젝트(VagabondK.OpenType)는 그 디지털 문자의 윤곽을 실제 OpenType 폰트 파일(OTF/TTF)로 변환해, 폰트 시스템에 설치하거나 임베디드 환경에서 텍스트 렌더링으로 재사용할 수 있게 합니다. 
+
+프로젝트를 진행하면서, 로컬 LLM의 한계 때문인지, 아님 바이브 코딩 초보라서 그런지 우여곡절이 너무 많았습니다. 
+
+그렇게 겪었던 우여곡절은 [블로그 글](https://blog.naver.com/vagabond-k/224413649567)로 작성했습니다.
 
 ## 주요 기능
 
