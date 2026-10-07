@@ -199,6 +199,29 @@ namespace VagabondK.OpenType.Geometry
         }
 
         /// <summary>
+        /// <see cref="EnumerateTtfPoints"/>가 반환할 점 수를 리스트 할당 없이 계산합니다.
+        /// (3차 베지어 세그먼트는 2차로 확장된 후의 점 수를 셉니다. maxp의 maxPoints 계산에 사용.)
+        /// </summary>
+        internal int CountTtfPoints()
+        {
+            if (commands.Count == 0)
+                return 0;
+
+            int count = 1; // 시작점
+            for (int i = 1; i < commands.Count; i++)
+            {
+                var cmd = commands[i];
+                if (cmd is CubicBezierCommand cubic)
+                    count += cubic.ToQuadraticBezierCommands(commands[i - 1].EndX, commands[i - 1].EndY).Count * 2;
+                else if (cmd is QuadraticBezierCommand)
+                    count += 2;
+                else
+                    count += 1;
+            }
+            return count;
+        }
+
+        /// <summary>
         /// 윤곽의 정확한 바운딩 박스를 계산합니다.
         /// 베지어 곡선은 제어점(convex hull)이 아닌 곡선 자체의 극값을 사용하며,
         /// 각 세그먼트의 도함수가 0이 되는 t(0..1)에서 곡선을 평가해

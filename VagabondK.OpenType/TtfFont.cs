@@ -52,12 +52,9 @@ namespace VagabondK.OpenType
         internal override MaxpTable CreateMaxpTable(int numGlyphs, int maxPoints, int maxContours)
         {
             // TrueType 윤곽은 maxp version 1.0(maxPoints/maxContours 포함)을 사용합니다.
-            // glyf 직렬화 시 3차 베지어가 2개의 2차 베지어로 변환되어 점 수가 늘어날 수 있으므로,
-            // 변환 후 점 수 기준으로 maxPoints를 재계산합니다.
-            int ttfMaxPoints = 0;
-            foreach (var glyph in Glyphs)
-                ttfMaxPoints = Math.Max(ttfMaxPoints, GlyfTable.CountTtfPoints(glyph.Outline));
-            return new MaxpTable(numGlyphs, ttfMaxPoints, maxContours);
+            // maxPoints는 호출자(FontBase.ToBytes)가 glyf 직렬화 기준(3차 베지어는 2차로 확장된 후의 점 수)으로
+            // 계산해 전달하므로 그대로 사용합니다.
+            return new MaxpTable(numGlyphs, maxPoints, maxContours);
         }
     }
 }

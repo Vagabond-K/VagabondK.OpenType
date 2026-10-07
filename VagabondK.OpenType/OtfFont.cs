@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using VagabondK.OpenType.CFF;
+using VagabondK.OpenType.Geometry;
 using VagabondK.OpenType.Tables;
 
 namespace VagabondK.OpenType
@@ -37,19 +38,18 @@ namespace VagabondK.OpenType
         protected override List<OpenTypeTable> CreateOutlineTables(int xMin, int yMin, int xMax, int yMax)
         {
             // CFF 테이블용 글리프 이름 생성: .notdef, standard name(ASCII/Latin-1) 또는 uniXXXX (glyph ID 순서)
-            var glyphNames = new List<string>();
+            // glyph ID → charCode 역참조를 한 번에 만들어 O(n²) 스캔을 피한다.
+            var glyphIdToChar = new int[GlyphCount];
+            for (int i = 0; i < glyphIdToChar.Length; i++)
+                glyphIdToChar[i] = -1;
+            foreach (var kv in CharToGlyph)
+                glyphIdToChar[kv.Value] = kv.Key;
+
+            var glyphNames = new List<string>(GlyphCount);
             glyphNames.Add(".notdef");
-            for (int i = 1; i < Glyphs.Count; i++)
+            for (int i = 1; i < GlyphCount; i++)
             {
-                int charCode = 0;
-                foreach (var kv in CharToGlyph)
-                {
-                    if (kv.Value == i)
-                    {
-                        charCode = kv.Key;
-                        break;
-                    }
-                }
+                int charCode = glyphIdToChar[i] >= 0 ? glyphIdToChar[i] : 0;
                 string name;
                 if (!CffBuilder.TryGetStandardName(charCode, out name))
                     name = "uni" + charCode.ToString("X4");
@@ -58,7 +58,10 @@ namespace VagabondK.OpenType
 
             // Family/Subfamily가 null/빈 값일 수 있으므로 JoinNonEmpty로 안전하게 결합합니다.
             // psName이 null/빈 값이면 CffTable.ToBytes()에서 예외가 발생합니다.
-            CFF.SetProperties(ComputePsName(), glyphNames, Glyphs.ToList());
+            var glyphList = new List<Glyph>(GlyphCount);
+            for (int i = 0; i < GlyphCount; i++)
+                glyphList.Add(GlyphAt(i));
+            CFF.SetProperties(ComputePsName(), glyphNames, glyphList);
             CFF.TopDict.FontBBox = new double[] { xMin, yMin, xMax, yMax };
 
             // Top DICT의 name 필드를 테이블 상태에서 자동 채웁니다.

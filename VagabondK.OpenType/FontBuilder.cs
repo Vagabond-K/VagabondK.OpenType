@@ -56,6 +56,8 @@ namespace VagabondK.OpenType
 
         // glyphs (문자 코드 → 글리프)
         private readonly List<KeyValuePair<int, Glyph>> glyphs = new List<KeyValuePair<int, Glyph>>();
+        // 중복 문자 코드 검사를 O(1)으로 하기 위한 추적 집합 (glyphs와 항상 동기)
+        private readonly HashSet<int> glyphCharCodes = new HashSet<int>();
 
         private struct LanguageEntry
         {
@@ -195,7 +197,7 @@ namespace VagabondK.OpenType
         {
             if (charCode < 0 || charCode > 0x10FFFF)
                 throw new ArgumentOutOfRangeException(nameof(charCode), $"The character code U+{charCode:X8} is out of range (0x0000-0x10FFFF).");
-            if (glyphs.Any(g => g.Key == charCode))
+            if (!glyphCharCodes.Add(charCode))
                 throw new ArgumentException($"The glyph for character U+{charCode:X4} is already defined.", nameof(charCode));
             glyphs.Add(new KeyValuePair<int, Glyph>(charCode, glyph));
             return this;

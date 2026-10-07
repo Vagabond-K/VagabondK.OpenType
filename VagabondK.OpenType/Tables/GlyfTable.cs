@@ -304,19 +304,5 @@ namespace VagabondK.OpenType.Tables
             }
         }
 
-        /// <summary>
-        /// TTF(glyf) 직렬화 시의 점 수를 계산합니다.
-        /// 3차 베지어 세그먼트는 2개의 2차 베지어로 변환되어 점 수가 늘어납니다.
-        /// maxp의 maxPoints 계산에 사용됩니다.
-        /// </summary>
-        internal static int CountTtfPoints(GlyphOutline outline)
-        {
-            int count = 0;
-            foreach (var contour in outline.Contours)
-            {
-                count += contour.EnumerateTtfPoints().Count;
-            }
-            return count;
-        }
     }
 }

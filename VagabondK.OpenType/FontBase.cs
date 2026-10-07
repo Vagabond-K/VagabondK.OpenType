@@ -109,6 +109,17 @@ namespace VagabondK.OpenType
         }
 
         /// <summary>
+        /// .notdef를 포함한 전체 글리프 개수입니다.
+        /// <see cref="Glyphs"/>와 달리 리스트를 할당하지 않아 내부 루프에서 사용합니다.
+        /// </summary>
+        internal int GlyphCount => glyphs.Count + 1;
+
+        /// <summary>
+        /// glyph ID 순서(0=.notdef)로 글리프를 반환합니다. 리스트 할당이 없습니다.
+        /// </summary>
+        internal Glyph GlyphAt(int index) => index == 0 ? notdef : glyphs[index - 1];
+
+        /// <summary>
         /// 문자 코드에서 glyph ID로의 매핑입니다.
         /// </summary>
         protected IReadOnlyDictionary<int, int> CharToGlyph => charToGlyph;
@@ -300,7 +311,7 @@ namespace VagabondK.OpenType
                 foreach (var contour in glyph.Outline.Contours)
                 {
                     // glyf에 실제로 저장되는 점 수(3차 베지어는 2차로 확장)
-                    glyphPoints += contour.EnumerateTtfPoints().Count;
+                    glyphPoints += contour.CountTtfPoints();
                     // 바운딩 박스: 곡선 자체의 극값(도함수 0인 t에서 평가)으로 정확히 계산
                     if (contour.ComputeBoundingBox(out double cxMin, out double cyMin, out double cxMax, out double cyMax))
                     {
@@ -407,6 +418,11 @@ namespace VagabondK.OpenType
             Os2.UnicodeRange2 = unicodeRanges[1];
             Os2.UnicodeRange3 = unicodeRanges[2];
             Os2.UnicodeRange4 = unicodeRanges[3];
+
+            // head의 checkSumAdjustment는 아래에서 계산되므로, 테이블 직렬화 단계에서는 반드시 0이어야 한다.
+            // (이전에 저장한 폰트의 head가 재사용될 수 있어 0으로 리셋한다 — 그렇지 않으면 재호출 시
+            //  디렉터리의 head checksum이 달라져 ToBytes가 멱등이 아니게 된다.)
+            Head.CheckSumAdjustment = 0;
 
             var tables = new List<OpenTypeTable>
             {

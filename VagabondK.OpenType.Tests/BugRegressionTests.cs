@@ -218,6 +218,25 @@ public class BugRegressionTests
         Assert.Equal(0xB1B0AFBAu, FontFactory.ChecksumSum(font));
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void ToBytes_IsIdempotent(bool otf)
+    {
+        // head.CheckSumAdjustment가 재직렬화 전에 리셋되지 않으면, 두 번째 호출부터
+        // 테이블 디렉터리의 head checksum이 이전 호출 값을 포함해 바이트가 달라진다.
+        var builder = FontFactory.NewBuilder();
+        builder.AddGlyph('1', FontFactory.RectGlyph(50, 0, 200, 700, 300));
+        builder.AddGlyph('2', FontFactory.RectGlyph(50, 0, 200, 700, 300));
+
+        FontBase font = otf ? builder.Build<OtfFont>() : builder.Build<TtfFont>();
+
+        byte[] first = font.ToBytes();
+        byte[] second = font.ToBytes();
+        Assert.Equal(first, second);
+        Assert.Equal(0xB1B0AFBAu, FontFactory.ChecksumSum(second));
+    }
+
     private static int IndexOfSequence(byte[] data, byte[] seq)
     {
         for (int i = 0; i <= data.Length - seq.Length; i++)
