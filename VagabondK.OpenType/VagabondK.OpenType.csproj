@@ -28,4 +28,8 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="VagabondK.OpenType.Tests" />
+  </ItemGroup>
+
 </Project>
