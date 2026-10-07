@@ -46,8 +46,8 @@ namespace VagabondK.OpenType.Tables
             var writer = new OpenTypeBinaryWriter();
             writer.WriteUInt32(0x00030000); // format 3.0
             writer.WriteFixed(ItalicAngle); // italicAngle
-            writer.WriteInt16((short)UnderlinePosition); // underlinePosition
-            writer.WriteInt16((short)UnderlineThickness); // underlineThickness
+            writer.WriteInt16(UnderlinePosition, "post underlinePosition"); // underlinePosition
+            writer.WriteInt16(UnderlineThickness, "post underlineThickness"); // underlineThickness
             writer.WriteUInt32(IsFixedPitch ? 1u : 0u); // isFixedPitch
             writer.WriteUInt32(0); // minMemType42
             writer.WriteUInt32(0); // maxMemType42

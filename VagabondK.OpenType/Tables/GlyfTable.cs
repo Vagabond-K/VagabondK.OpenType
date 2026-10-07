@@ -221,11 +221,12 @@ namespace VagabondK.OpenType.Tables
             }
 
             // Glyph Header: numberOfContours(0 이상이면 simple glyph), xMin, yMin, xMax, yMax
-            writer.WriteInt16((short)numContours);
-            writer.WriteInt16((short)xMin);
-            writer.WriteInt16((short)yMin);
-            writer.WriteInt16((short)xMax);
-            writer.WriteInt16((short)yMax);
+            // glyf 좌표는 int16이므로 범위를 넘으면 조용히 잘리지 않고 예외가 발생합니다.
+            writer.WriteInt16(numContours, "glyf numberOfContours");
+            writer.WriteInt16(xMin, "glyf xMin");
+            writer.WriteInt16(yMin, "glyf yMin");
+            writer.WriteInt16(xMax, "glyf xMax");
+            writer.WriteInt16(yMax, "glyf yMax");
 
             // contour가 0이면 헤더 이후 추가 데이터가 필요 없습니다.
             if (numContours == 0)
@@ -233,7 +234,7 @@ namespace VagabondK.OpenType.Tables
 
             // endPtsOfContours: 각 contour의 마지막 점 인덱스(0-based, 증가 순서)
             foreach (int end in endPts)
-                writer.WriteUInt16((ushort)end);
+                writer.WriteUInt16(end, "glyf endPtsOfContours");
 
             writer.WriteUInt16(0); // instructionLength (0 = instructions 없음)
             WriteCoordinates(writer, allPoints, xs, ys);
@@ -289,7 +290,7 @@ namespace VagabondK.OpenType.Tables
                 if ((flag & 0x02) != 0)
                     writer.WriteUInt8((byte)(dx[j] > 0 ? dx[j] : -dx[j]));
                 else if ((flag & 0x10) == 0)
-                    writer.WriteInt16((short)dx[j]);
+                    writer.WriteInt16(dx[j], "glyf x delta");
             }
 
             // y 좌표 기록: Y_SHORT_VECTOR이면 1바이트(절대값), Y_IS_SAME가 아니면 2바이트(부호 있는 델타)
@@ -299,7 +300,7 @@ namespace VagabondK.OpenType.Tables
                 if ((flag & 0x04) != 0)
                     writer.WriteUInt8((byte)(dy[j] > 0 ? dy[j] : -dy[j]));
                 else if ((flag & 0x20) == 0)
-                    writer.WriteInt16((short)dy[j]);
+                    writer.WriteInt16(dy[j], "glyf y delta");
             }
         }
 

@@ -283,6 +283,9 @@ namespace VagabondK.OpenType
             int maxPoints = 0, maxContours = 0;
             int advanceWidthMax = 0, minLeftSideBearing = 0, minRightSideBearing = 0, xMaxExtent = 0;
             bool first = true;
+            // 사이드 베어링/extent는 값이 전부 양수여도 0이면 안 되므로,
+            // 0 초기화 후 Math.Min/Max하면 최소값이 0으로 고정된다. 첫 관측 값으로 초기화하기 위한 플래그.
+            bool bearingSeen = false;
 
             var advanceWidths = new List<int>();
             var leftSideBearings = new List<int>();
@@ -351,9 +354,19 @@ namespace VagabondK.OpenType
                 {
                     int width = (int)Math.Round(gxMax - gxMin);
                     int rightSideBearing = glyph.AdvanceWidth - glyph.LeftSideBearing - width;
-                    minLeftSideBearing = Math.Min(minLeftSideBearing, glyph.LeftSideBearing);
-                    minRightSideBearing = Math.Min(minRightSideBearing, rightSideBearing);
-                    xMaxExtent = Math.Max(xMaxExtent, glyph.LeftSideBearing + width);
+                    if (!bearingSeen)
+                    {
+                        minLeftSideBearing = glyph.LeftSideBearing;
+                        minRightSideBearing = rightSideBearing;
+                        xMaxExtent = glyph.LeftSideBearing + width;
+                        bearingSeen = true;
+                    }
+                    else
+                    {
+                        minLeftSideBearing = Math.Min(minLeftSideBearing, glyph.LeftSideBearing);
+                        minRightSideBearing = Math.Min(minRightSideBearing, rightSideBearing);
+                        xMaxExtent = Math.Max(xMaxExtent, glyph.LeftSideBearing + width);
+                    }
                 }
             }
 

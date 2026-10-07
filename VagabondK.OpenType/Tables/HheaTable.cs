@@ -80,16 +80,16 @@ namespace VagabondK.OpenType.Tables
         {
             var writer = new OpenTypeBinaryWriter();
             writer.WriteUInt32(0x00010000); // version 1.0
-            writer.WriteInt16((short)Ascender);
-            writer.WriteInt16((short)Descender);
-            writer.WriteInt16((short)LineGap);
-            writer.WriteUInt16((ushort)AdvanceWidthMax);
-            writer.WriteInt16((short)MinLeftSideBearing);
-            writer.WriteInt16((short)MinRightSideBearing);
-            writer.WriteInt16((short)XMaxExtent);
-            writer.WriteInt16((short)CaretSlopeRise);
-            writer.WriteInt16((short)CaretSlopeRun);
-            writer.WriteInt16((short)CaretOffset);
+            writer.WriteInt16(Ascender, "hhea ascender");
+            writer.WriteInt16(Descender, "hhea descender");
+            writer.WriteInt16(LineGap, "hhea lineGap");
+            writer.WriteUInt16(AdvanceWidthMax, "hhea advanceWidthMax");
+            writer.WriteInt16(MinLeftSideBearing, "hhea minLeftSideBearing");
+            writer.WriteInt16(MinRightSideBearing, "hhea minRightSideBearing");
+            writer.WriteInt16(XMaxExtent, "hhea xMaxExtent");
+            writer.WriteInt16(CaretSlopeRise, "hhea caretSlopeRise");
+            writer.WriteInt16(CaretSlopeRun, "hhea caretSlopeRun");
+            writer.WriteInt16(CaretOffset, "hhea caretOffset");
             writer.WriteInt16(0); // reserved
             writer.WriteInt16(0); // reserved
             writer.WriteInt16(0); // reserved

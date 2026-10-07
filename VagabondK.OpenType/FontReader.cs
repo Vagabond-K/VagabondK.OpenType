@@ -87,6 +87,10 @@ namespace VagabondK.OpenType
                     leftSideBearings[i] = hmtx.LeftSideBearings[i];
                 }
             }
+            else
+            {
+                throw new InvalidOperationException("The font has no hmtx table.");
+            }
 
             // cmap (glyphId → charCode 역매핑)
             var glyphToChar = new Dictionary<int, int>();

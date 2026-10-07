@@ -10,6 +10,13 @@ namespace VagabondK.OpenType.Tables
     /// </summary>
     class LocaTable : OpenTypeTable
     {
+        /// <summary>
+        /// loca short 형식(Offset16)으로 표현할 수 있는 최대 glyf 오프셋입니다.
+        /// short 형식은 오프셋을 2로 나눈 값을 uint16으로 저장하므로 65535 * 2 = 131070바이트까지 표현 가능합니다.
+        /// 이 값을 초과하면 long 형식(Offset32)을 사용해야 합니다.
+        /// </summary>
+        internal const int MaxShortOffset = 65535 * 2;
+
         private readonly int[] offsets;
         private readonly bool useLongFormat;
 

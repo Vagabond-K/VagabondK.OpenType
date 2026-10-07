@@ -534,37 +534,22 @@ namespace VagabondK.OpenType.CFF
         /// </summary>
         private static void WriteCffNumber(List<byte> buf, double value)
         {
-            if (value == Math.Floor(value) && Math.Abs(value) <= 32767)
+            // 정수는 크기 제한 없이 op 28(short)/op 29(long)로 인코딩한다.
+            // op 255(16.16 short fixed)는 실수 전용이며 표현 범위가 약 ±32768로 좁으므로,
+            // 큰 정수를 255 경로로 보내면 값이 잘린다.
+            bool isInteger = value == Math.Floor(value);
+            if (isInteger && value >= int.MinValue && value <= int.MaxValue)
             {
-                int v = (int)value;
-                if (v >= -107 && v <= 107)
-                    buf.Add((byte)(v + 139));
-                else if (v >= 108 && v <= 1131)
-                {
-                    buf.Add((byte)((v - 108) / 256 + 247));
-                    buf.Add((byte)((v - 108) % 256));
-                }
-                else if (v >= -1131 && v <= -108)
-                {
-                    buf.Add((byte)(-(v + 108) / 256 + 251));
-                    buf.Add((byte)(-(v + 108) % 256));
-                }
-                else if (v >= -32768 && v <= 32767)
-                {
-                    buf.Add(28);
-                    buf.Add((byte)((v >> 8) & 0xFF));
-                    buf.Add((byte)(v & 0xFF));
-                }
-                else
-                {
-                    buf.Add(29);
-                    buf.Add((byte)((v >> 24) & 0xFF));
-                    buf.Add((byte)((v >> 16) & 0xFF));
-                    buf.Add((byte)((v >> 8) & 0xFF));
-                    buf.Add((byte)(v & 0xFF));
-                }
+                WriteCffInteger(buf, (int)value);
+                return;
             }
-            else
+            if (isInteger)
+            {
+                // int32를 초과하는 정수는 charstring으로 표현 불가 → 표현 가능한 한계로 클램핑
+                WriteCffInteger(buf, value > 0 ? int.MaxValue : int.MinValue);
+                return;
+            }
+            if (value >= -32768.0 && value < 32768.0)
             {
                 buf.Add(255);
                 int fixedVal = (int)Math.Round(value * 65536.0);
@@ -572,6 +557,45 @@ namespace VagabondK.OpenType.CFF
                 buf.Add((byte)((fixedVal >> 16) & 0xFF));
                 buf.Add((byte)((fixedVal >> 8) & 0xFF));
                 buf.Add((byte)(fixedVal & 0xFF));
+                return;
+            }
+            // short fixed 범위를 벗어난 실수는 정수로 반올림해 longint로 기록한다.
+            double rounded = Math.Round(value);
+            if (rounded > int.MaxValue) rounded = int.MaxValue;
+            if (rounded < int.MinValue) rounded = int.MinValue;
+            WriteCffInteger(buf, (int)rounded);
+        }
+
+        /// <summary>
+        /// CFF 정수 number를 최소 길이로 인코딩하여 기록합니다.
+        /// </summary>
+        private static void WriteCffInteger(List<byte> buf, int v)
+        {
+            if (v >= -107 && v <= 107)
+                buf.Add((byte)(v + 139));
+            else if (v >= 108 && v <= 1131)
+            {
+                buf.Add((byte)((v - 108) / 256 + 247));
+                buf.Add((byte)((v - 108) % 256));
+            }
+            else if (v >= -1131 && v <= -108)
+            {
+                buf.Add((byte)(-(v + 108) / 256 + 251));
+                buf.Add((byte)(-(v + 108) % 256));
+            }
+            else if (v >= -32768 && v <= 32767)
+            {
+                buf.Add(28);
+                buf.Add((byte)((v >> 8) & 0xFF));
+                buf.Add((byte)(v & 0xFF));
+            }
+            else
+            {
+                buf.Add(29);
+                buf.Add((byte)((v >> 24) & 0xFF));
+                buf.Add((byte)((v >> 16) & 0xFF));
+                buf.Add((byte)((v >> 8) & 0xFF));
+                buf.Add((byte)(v & 0xFF));
             }
         }
 

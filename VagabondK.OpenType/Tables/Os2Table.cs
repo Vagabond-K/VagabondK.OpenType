@@ -251,21 +251,21 @@ namespace VagabondK.OpenType.Tables
         {
             var writer = new OpenTypeBinaryWriter();
             writer.WriteUInt16(4); // version
-            writer.WriteInt16((short)XAvgCharWidth); // xAvgCharWidth
+            writer.WriteInt16(XAvgCharWidth, "OS/2 xAvgCharWidth");
             writer.WriteUInt16((ushort)(int)WeightClass); // usWeightClass
             writer.WriteUInt16((ushort)(int)WidthClass); // usWidthClass
             writer.WriteUInt16((ushort)(int)FsType); // fsType
-            writer.WriteInt16((short)YSubscriptXSize); // ySubscriptXSize
-            writer.WriteInt16((short)YSubscriptYSize); // ySubscriptYSize
-            writer.WriteInt16((short)YSubscriptXOffset); // ySubscriptXOffset
-            writer.WriteInt16((short)YSubscriptYOffset); // ySubscriptYOffset
-            writer.WriteInt16((short)YSuperscriptXSize); // ySuperscriptXSize
-            writer.WriteInt16((short)YSuperscriptYSize); // ySuperscriptYSize
-            writer.WriteInt16((short)YSuperscriptXOffset); // ySuperscriptXOffset
-            writer.WriteInt16((short)YSuperscriptYOffset); // ySuperscriptYOffset
-            writer.WriteInt16((short)YStrikeoutSize); // yStrikeoutSize
-            writer.WriteInt16((short)YStrikeoutPosition); // yStrikeoutPosition
-            writer.WriteInt16((short)FamilyClass); // sFamilyClass
+            writer.WriteInt16(YSubscriptXSize, "OS/2 ySubscriptXSize");
+            writer.WriteInt16(YSubscriptYSize, "OS/2 ySubscriptYSize");
+            writer.WriteInt16(YSubscriptXOffset, "OS/2 ySubscriptXOffset");
+            writer.WriteInt16(YSubscriptYOffset, "OS/2 ySubscriptYOffset");
+            writer.WriteInt16(YSuperscriptXSize, "OS/2 ySuperscriptXSize");
+            writer.WriteInt16(YSuperscriptYSize, "OS/2 ySuperscriptYSize");
+            writer.WriteInt16(YSuperscriptXOffset, "OS/2 ySuperscriptXOffset");
+            writer.WriteInt16(YSuperscriptYOffset, "OS/2 ySuperscriptYOffset");
+            writer.WriteInt16(YStrikeoutSize, "OS/2 yStrikeoutSize");
+            writer.WriteInt16(YStrikeoutPosition, "OS/2 yStrikeoutPosition");
+            writer.WriteInt16(FamilyClass, "OS/2 sFamilyClass");
             writer.WriteUInt8((byte)Panose.FamilyType); // panose: bFamilyType
             writer.WriteUInt8((byte)Panose.SerifStyle); // panose: bSerifStyle
             writer.WriteUInt8((byte)Panose.Weight); // panose: bWeight
@@ -284,18 +284,18 @@ namespace VagabondK.OpenType.Tables
             writer.WriteUInt16((ushort)(int)FsSelection); // fsSelection
             writer.WriteUInt16((ushort)UsFirstCharIndex);
             writer.WriteUInt16((ushort)UsLastCharIndex);
-            writer.WriteInt16((short)Ascender); // sTypoAscender
-            writer.WriteInt16((short)Descender); // sTypoDescender
-            writer.WriteInt16((short)TypoLineGap); // sTypoLineGap
-            writer.WriteUInt16((ushort)WinAscent); // usWinAscent
-            writer.WriteUInt16((ushort)WinDescent); // usWinDescent
+            writer.WriteInt16(Ascender, "OS/2 sTypoAscender");
+            writer.WriteInt16(Descender, "OS/2 sTypoDescender");
+            writer.WriteInt16(TypoLineGap, "OS/2 sTypoLineGap");
+            writer.WriteUInt16(WinAscent, "OS/2 usWinAscent"); // usWinAscent
+            writer.WriteUInt16(WinDescent, "OS/2 usWinDescent"); // usWinDescent
             writer.WriteUInt32(CodePageRange1); // ulCodePageRange1
             writer.WriteUInt32(CodePageRange2); // ulCodePageRange2
-            writer.WriteInt16((short)XHeight); // sxHeight
-            writer.WriteInt16((short)CapHeight); // sCapHeight
-            writer.WriteUInt16((ushort)DefaultChar); // usDefaultChar
-            writer.WriteUInt16((ushort)BreakChar); // usBreakChar
-            writer.WriteUInt16((ushort)MaxContext); // usMaxContext
+            writer.WriteInt16(XHeight, "OS/2 sxHeight"); // sxHeight
+            writer.WriteInt16(CapHeight, "OS/2 sCapHeight"); // sCapHeight
+            writer.WriteUInt16(DefaultChar, "OS/2 usDefaultChar"); // usDefaultChar
+            writer.WriteUInt16(BreakChar, "OS/2 usBreakChar"); // usBreakChar
+            writer.WriteUInt16(MaxContext, "OS/2 usMaxContext"); // usMaxContext
             return writer.ToArray();
         }
 

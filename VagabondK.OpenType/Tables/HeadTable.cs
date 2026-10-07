@@ -120,10 +120,10 @@ namespace VagabondK.OpenType.Tables
             writer.WriteUInt16((ushort)UnitsPerEm); // unitsPerEm
             writer.WriteLongDateTime(Created); // created
             writer.WriteLongDateTime(Modified); // modified
-            writer.WriteInt16((short)XMin);
-            writer.WriteInt16((short)YMin);
-            writer.WriteInt16((short)XMax);
-            writer.WriteInt16((short)YMax);
+            writer.WriteInt16(XMin, "head xMin");
+            writer.WriteInt16(YMin, "head yMin");
+            writer.WriteInt16(XMax, "head xMax");
+            writer.WriteInt16(YMax, "head yMax");
             writer.WriteUInt16((ushort)(int)MacStyle); // macStyle
             writer.WriteUInt16((ushort)LowestRecPPEM); // lowestRecPPEM
             writer.WriteInt16((short)(int)FontDirectionHint); // fontDirectionHint

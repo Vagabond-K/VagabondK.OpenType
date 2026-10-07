@@ -45,8 +45,8 @@ namespace VagabondK.OpenType.Tables
             var writer = new OpenTypeBinaryWriter();
             for (int i = 0; i < advanceWidths.Count; i++)
             {
-                writer.WriteUInt16((ushort)advanceWidths[i]);
-                writer.WriteInt16((short)leftSideBearings[i]);
+                writer.WriteUInt16(advanceWidths[i], $"hmtx advanceWidth[{i}]");
+                writer.WriteInt16(leftSideBearings[i], $"hmtx leftSideBearing[{i}]");
             }
             return writer.ToArray();
         }

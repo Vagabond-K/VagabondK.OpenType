@@ -85,6 +85,33 @@ namespace VagabondK.OpenType
         public void WriteInt16(short value) => WriteUInt16((ushort)value);
 
         /// <summary>
+        /// int16(2바이트, FWORD) 값을 범위를 검사하여 빅 엔디안으로 기록합니다.
+        /// 호출자가 int를 직접 넘기면 -32768..32767 초과 시 조용히 잘리지 않고 예외가 발생합니다.
+        /// </summary>
+        /// <param name="value">기록할 값입니다.</param>
+        /// <param name="fieldName">범위 초과 시 메시지에 표시할 필드 이름입니다.</param>
+        public void WriteInt16(int value, string fieldName)
+        {
+            if (value < short.MinValue || value > short.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(value),
+                    $"{fieldName} ({value}) is out of range for int16 (-32768..32767).");
+            WriteInt16((short)value);
+        }
+
+        /// <summary>
+        /// uint16(2바이트, UFWORD) 값을 범위를 검사하여 빅 엔디안으로 기록합니다.
+        /// </summary>
+        /// <param name="value">기록할 값입니다.</param>
+        /// <param name="fieldName">범위 초과 시 메시지에 표시할 필드 이름입니다.</param>
+        public void WriteUInt16(int value, string fieldName)
+        {
+            if (value < ushort.MinValue || value > ushort.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(value),
+                    $"{fieldName} ({value}) is out of range for uint16 (0..65535).");
+            WriteUInt16((ushort)value);
+        }
+
+        /// <summary>
         /// int32(4바이트, LONG) 값을 빅 엔디안으로 기록합니다.
         /// </summary>
         /// <param name="value">기록할 값입니다.</param>

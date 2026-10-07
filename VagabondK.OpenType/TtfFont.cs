@@ -30,7 +30,21 @@ namespace VagabondK.OpenType
         {
             var glyfTable = new GlyfTable(Glyphs.Select(g => g.Outline).ToList());
             glyfTable.ToBytes(); // glyf 테이블 내 각 글리프의 오프셋 계산 (loca 테이블에 사용)
-            var locaTable = new LocaTable(glyfTable.Offsets, Head.UseLongLoca);
+
+            // loca short 형식은 오프셋을 2로 나눈 값을 uint16으로 저장하므로
+            // glyf 오프셋이 131070(=65535*2)을 넘으면 long 형식을 써야 한다.
+            // 사용자가 short를 지정했어도 한계를 넘으면 자동으로 승격한다 (그렇지 않으면 파일이 손상된다).
+            bool needsLong = Head.UseLongLoca;
+            if (!needsLong)
+                foreach (int off in glyfTable.Offsets)
+                    if (off > LocaTable.MaxShortOffset)
+                    {
+                        needsLong = true;
+                        break;
+                    }
+            Head.UseLongLoca = needsLong;
+
+            var locaTable = new LocaTable(glyfTable.Offsets, needsLong);
             return new List<OpenTypeTable> { glyfTable, locaTable };
         }
 
