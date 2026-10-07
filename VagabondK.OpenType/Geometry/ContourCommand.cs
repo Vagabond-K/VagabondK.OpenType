@@ -156,6 +156,7 @@ namespace VagabondK.OpenType.Geometry
         }
 
         private List<QuadraticBezierCommand> quads;
+        private double quadStartX, quadStartY; // quads 캐시를 계산할 때 사용한 시작점 (캐시 키)
 
         /// <summary>
         /// 2차 근사 허용 오차(폰트 단위)입니다.
@@ -171,18 +172,23 @@ namespace VagabondK.OpenType.Geometry
         /// 아니면 t=0.5에서 드 카스텔조 분할 후 재귀적으로 처리합니다.
         /// 각 2차 베지어의 제어점은 양 끝점 접선 교차점을 사용해
         /// 분할 지점에서 C1 연속(부드러운 연결)을 보장합니다.
-        /// 변환 결과는 시작점 기준 한 번만 계산해 캐시하며, 이후 호출은 캐시를 재사용합니다.
+        /// 변환 결과는 (제어점, 종점, 시작점) 기준 한 번만 계산해 캐시하며, 같은 시작점으로 다시 호출되면
+        /// 캐시를 재사용합니다. 시작점은 contour 편집(앞 커맨드 삽입/교체)이나 같은 인스턴스를 다른
+        /// 위치에서 재사용할 때 변할 수 있으므로, 캐시 키에 반드시 포함해야 합니다.
         /// </summary>
         /// <param name="startX">시작점 X 좌표(이 세그먼트의 출발점)입니다.</param>
         /// <param name="startY">시작점 Y 좌표(이 세그먼트의 출발점)입니다.</param>
         internal IReadOnlyList<QuadraticBezierCommand> ToQuadraticBezierCommands(double startX, double startY)
         {
-            if (quads != null)
+            // 시작점이 캐시 키의 일부다: 다르면 캐시를 무효화하고 다시 계산한다.
+            if (quads != null && startX == quadStartX && startY == quadStartY)
                 return quads;
 
             var result = new List<QuadraticBezierCommand>();
             AppendQuadratic(result, startX, startY, C1X, C1Y, C2X, C2Y, X, Y);
             quads = result;
+            quadStartX = startX;
+            quadStartY = startY;
             return quads;
         }
 

@@ -237,6 +237,87 @@ public class BugRegressionTests
         Assert.Equal(0xB1B0AFBAu, FontFactory.ChecksumSum(second));
     }
 
+    // ── cubic→quad 캐시 무효화 ─────────────────────────────────
+
+    [Fact]
+    public void CubicQuadCache_InvalidatedWhenStartPointChanges_ByInsert()
+    {
+        // contour 편집으로 cubic의 시작점이 바뀌면 캐시된 quad 근사도 다시 계산되어야 한다.
+        var contour = new GlyphContour();
+        contour.MoveTo(0, 0);
+        contour.CurveTo(100, 600, 600, 600, 700, 300);
+        contour.EnumerateTtfPoints();                    // (0,0) 시작점으로 캐시 채움
+        contour.Insert(1, new LineToCommand(300, 400));  // 시작점이 (300,400)으로 변경
+
+        var edited = contour.EnumerateTtfPoints();
+
+        var fresh = new GlyphContour();
+        fresh.MoveTo(0, 0);
+        fresh.LineTo(300, 400);
+        fresh.CurveTo(100, 600, 600, 600, 700, 300);
+        var expected = fresh.EnumerateTtfPoints();
+
+        Assert.Equal(expected.Select(p => (Math.Round(p.X, 6), Math.Round(p.Y, 6), p.IsOnCurve)),
+                     edited.Select(p => (Math.Round(p.X, 6), Math.Round(p.Y, 6), p.IsOnCurve)));
+    }
+
+    [Fact]
+    public void CubicQuadCache_InvalidatedWhenStartPointChanges_SharedInstance()
+    {
+        // 같은 CubicBezierCommand 인스턴스를 다른 시작점에서 재사용하면(글리프 간 커맨드 공유),
+        // 시작점별로 다시 계산되어야 한다.
+        // (참고: quad 근사는 평행이동 불변이 아니다 — P0가 바뀌면 3차 성분 c가 변해 다른 곡선이 된다.
+        //  그래서 "A를 500平移한 것"과 비교하는 것은 틀린 가정이고, 캐시 없는 참조와 비교해야 한다.)
+        var cubic = new CubicBezierCommand(100, 600, 600, 600, 700, 300);
+
+        var c1 = new GlyphContour(); c1.MoveTo(0, 0); c1.Add(cubic);
+        var c2 = new GlyphContour(); c2.MoveTo(0, 500); c2.Add(cubic);
+
+        var p1 = c1.EnumerateTtfPoints();   // cubic의 캐시를 (0,0) 기준으로 채움
+        var p2 = c2.EnumerateTtfPoints();   // 시작점이 다르므로 재계산되어야 함
+
+        var fresh = new GlyphContour();
+        fresh.MoveTo(0, 500);
+        fresh.Add(new CubicBezierCommand(100, 600, 600, 600, 700, 300)); // 캐시 오염 없는 참조
+        var expected = fresh.EnumerateTtfPoints();
+
+        Assert.Equal(RoundPoints(expected), RoundPoints(p2));
+        // 캐시가 무효화되지 않으면 p2가 (0,0) 기준 근사를 그대로 재사용해 첫 제어점 y가 p1과 같아진다.
+        Assert.NotEqual(RoundPoints(p1).Skip(1).First(), RoundPoints(p2).Skip(1).First());
+    }
+
+    [Fact]
+    public void CubicQuadCache_SharedCommand_MatchesUnsharedCommand()
+    {
+        // 글리프 A가 cubic 캐시를 (0,0) 시작점으로 채운 뒤 글리프 B가 같은 인스턴스를 (0,500)에서
+        // 재사용할 때, 캐시가 무효화되지 않으면 B의 glyf 점 배열이 (0,0) 기준 근사로 오염된다.
+        // 커맨드 인스턴스를 공유하지 않는 폰트와 바이트 단위로 동일해야 한다.
+        var shared = new CubicBezierCommand(100, 600, 600, 600, 700, 300);
+
+        byte[] Build(bool useShared)
+        {
+            var o1 = new GlyphOutline();
+            var k1 = o1.BeginContour(); k1.MoveTo(0, 0);
+            k1.Add(useShared ? shared : new CubicBezierCommand(100, 600, 600, 600, 700, 300));
+            k1.LineTo(0, 0);
+
+            var o2 = new GlyphOutline();
+            var k2 = o2.BeginContour(); k2.MoveTo(0, 500);
+            k2.Add(useShared ? shared : new CubicBezierCommand(100, 600, 600, 600, 700, 300));
+            k2.LineTo(0, 500);
+
+            var builder = FontFactory.NewBuilder();
+            builder.AddGlyph('A', new Glyph(o1, 700));
+            builder.AddGlyph('B', new Glyph(o2, 700));
+            return FontFactory.ToBytes<TtfFont>(builder);
+        }
+
+        Assert.Equal(Build(false), Build(true));
+    }
+
+    private static IEnumerable<(long X, long Y, bool On)> RoundPoints(List<GlyphPoint> pts) =>
+        pts.Select(p => ((long)Math.Round(p.X), (long)Math.Round(p.Y), p.IsOnCurve));
+
     private static int IndexOfSequence(byte[] data, byte[] seq)
     {
         for (int i = 0; i <= data.Length - seq.Length; i++)
