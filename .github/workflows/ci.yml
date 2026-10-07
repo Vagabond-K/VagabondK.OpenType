@@ -66,7 +66,7 @@ jobs:
       - name: Validate fonts
         run: |
           cat > validate_fonts.py <<'PY'
-          import glob, sys
+          import glob, io, sys
           from fontTools.ttLib import TTFont
           files = sorted(glob.glob("SimpleFontSample/bin/Release/net*/**/*.otf", recursive=True)
                        + glob.glob("SimpleFontSample/bin/Release/net*/**/*.ttf", recursive=True)
@@ -78,7 +78,7 @@ jobs:
           for p in files:
               try:
                   f = TTFont(p)
-                  f.compile()
+                  f.save(io.BytesIO())  # 재직렬화 검증 (TTFont에 compile은 없음)
                   f.close()
                   print("OK", p)
               except Exception as e:
